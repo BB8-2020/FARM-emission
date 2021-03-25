@@ -1,3 +1,6 @@
+"""Placeholder test file."""
+
+
 def test_placeholder():
-    """ A placeholder test to prevent pytest workflow."""
+    """Place holder test for pytest."""
     pass
