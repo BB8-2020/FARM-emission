@@ -1,5 +1,3 @@
 def test_placeholder():
-    """This is a placeholder test to prevent pytest workflow.
-    
-    """
+    """ A placeholder test to prevent pytest workflow."""
     pass
