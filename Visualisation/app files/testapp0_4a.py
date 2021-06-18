@@ -7,9 +7,8 @@ from flask_caching import Cache
 
 import pandas as pd
 import plotly.express as px
-# import plotly.graph_objects as go
 
-df2 = pd.read_pickle('Lucas.pkl')
+df2 = pd.read_pickle('kenya0_2a.pkl')
 
 app = dash.Dash()
 
@@ -17,13 +16,13 @@ cache = Cache(app.server, config={"CACHE_TYPE": "simple"})
 
 
 def SOC_map(occurances):
-    token = open("token.txt").read() # you will need your own token
+    token = open("token.txt").read()
     fig2 = px.scatter_mapbox(occurances, lat="GPS_LAT", lon="GPS_LONG",
-                            color_discrete_sequence=["green"], zoom=2, height=500, size_max=10,
-                            color_continuous_scale=px.colors.diverging.RdYlGn, color='OC',
-                            range_color=[df2['OC'].min(), df2['OC'].max()], opacity=0.75, hover_name="POINT_ID")
-    fig2.update_layout(mapbox_style="dark", mapbox_accesstoken=token)
-    fig2.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+                             color_discrete_sequence=["green"], zoom=5, height=600, size_max=10,
+                             color_continuous_scale=px.colors.diverging.RdYlGn, color='OC',
+                             range_color=[df2['OC'].min(), df2['OC'].max()], opacity=0.75, hover_name="Point_ID")
+    fig2.update_layout(mapbox_style="satellite-streets", mapbox_accesstoken=token)
+    fig2.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     fig2.update_layout({
         'plot_bgcolor': 'rgba(0, 0, 0, 0)',
         'paper_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -31,6 +30,7 @@ def SOC_map(occurances):
     })
     fig2.update_layout(clickmode='event')
     return fig2
+
 
 @app.callback(
     [Output('output-range-slider', 'children'),
@@ -41,17 +41,19 @@ def update_output(value):
     filterset = filter_occurances(value)
     return 'There are {} points in the range {} to {}'.format(len(filterset), value[0], value[1]), SOC_map(filterset)
 
+
 @app.callback(
     Output('editing-columns', 'data'),
     Input('SOC-map', 'clickData'))
 def update_columns(clickData):
     try:
         ID = clickData['points'][0]['hovertext']
-        data = df2[df2['POINT_ID'] == ID].to_dict('records')
+        data = df2[df2['Point_ID'] == ID].to_dict('records')
     except:
         ID = None
-        data =df2[df2['POINT_ID'] == ID].to_dict('records')
+        data = df2[df2['Point_ID'] == ID].to_dict('records')
     return data
+
 
 @app.callback(
     [Output(component_id='inputtab', component_property='data'),
@@ -62,25 +64,19 @@ def update_columns(clickData):
 )
 def update_output_div(n_clicks, input_value1, input_value2):
     try:
-        items = (abs(df2['GPS_LONG'] - input_value1)+abs(df2['GPS_LAT'] - input_value2))
-        print(items)
+        items = (abs(df2['GPS_LONG'] - input_value1) + abs(df2['GPS_LAT'] - input_value2))
         items.sort_values(inplace=True)
         head = items.head()
-        print(head)
         headmin = head.index
-        datafull = df2.iloc[headmin,:]
-        # print(datafull)
+        datafull = df2.loc[headmin, :]
         data = datafull.to_dict('records')
     except:
         datafull = df2
-        # print(datafull)
         data = None
     return data, SOC_map(datafull)
 
 
 @cache.memoize(10)
-# def filter_sightings(filter_text):
-#     return df2[df2["OC"].astype(str).str.contains(filter_text, na=False)]
 def filter_occurances(filter_text):
     return df2[(df2['OC'] >= filter_text[0]) & (df2['OC'] <= filter_text[1])]
 
@@ -101,7 +97,7 @@ app.layout = html.Div([
                         step=0.5,
                         value=[df2["OC"].min(), df2["OC"].max()],
                         allowCross=False,
-                        pushable= 0.5,
+                        pushable=0.5,
                         tooltip={
                             'always_visible': True,
                             'placement': 'bottom'
@@ -118,7 +114,7 @@ app.layout = html.Div([
             ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
                       'backgroundColor': '#6CC4A6', 'vertical-align': 'top'})
         ], style={'backgroundColor': '#6CC4A6', 'border': '1px solid #348C6E'},
-           selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'}),
+                selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'}),
         dcc.Tab(label='Closest', children=[
             html.Div(html.H1("SOC in Europa", style={'text-align': 'center'}), style={'backgroundColor': 'green'}),
             html.Div(dcc.Graph(id="SOC-map2", config={'displayModeBar': False}),
@@ -145,8 +141,8 @@ app.layout = html.Div([
             ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
                       'backgroundColor': '#6CC4A6', 'vertical-align': 'top'})
         ], style={'backgroundColor': '#6CC4A6', 'border': '1px solid #348C6E'},
-           selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'})
+                selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'})
     ])
 ], style={'padding': '10px', 'backgroundColor': '#4EA688'})
 
-app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
+app.run_server(debug=True)
