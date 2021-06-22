@@ -18,6 +18,16 @@ app.layout = html.Div([
     state=[State(component_id='my-id', component_property='value')]
 )
 def update_output_div(n_clicks, input_value):
+    """
+    Updates the text line with the input given and the amount of clicks.
+
+    Parameters:
+        n_clicks (int): The amount of clicks.
+        input_value (str): The given input.
+
+    Returns:
+        String containing input_value and n_clicks.
+    """
     return 'You\'ve entered "{}" and clicked {} times'.format(input_value, n_clicks)
 
 

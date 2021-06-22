@@ -11,10 +11,20 @@ import plotly.express as px
 df2 = pd.read_pickle('Lucas0_1.pkl')
 
 app = dash.Dash()
+
 cache = Cache(app.server, config={"CACHE_TYPE": "simple"})
 
 
 def SOC_map(occurances):
+    """
+    Creates a scatter_mapbox with the given values and returns it.
+
+    Parameters:
+        occurances (pd.DataFrame): DataFrame containing data that needs to be displayed.
+
+    Returns:
+        Scatter_mapbox of given data.
+    """
     token = open("token.txt").read()
     fig2 = px.scatter_mapbox(occurances, lat="GPS_LAT", lon="GPS_LONG",
                              color_discrete_sequence=["green"], zoom=2, height=500, size_max=10,
@@ -32,6 +42,15 @@ def SOC_map(occurances):
 
     [Input('range-slider', 'value')])
 def update_output(value):
+    """
+    Updates the scatter_mapbox and the text on the range page based on the range-slider
+
+    Parameters:
+        value (list): list containing the minimum and maximum selected values from range-slider.
+
+    Returns:
+        Text line with info about the data and a scatter_mapbox with values within the given range.
+    """
     filterset = filter_occurances(value)
     return 'There are {} points in the range {} to {}'.format(len(filterset), value[0], value[1]), SOC_map(filterset)
 
@@ -40,10 +59,19 @@ def update_output(value):
     Output('editing-columns', 'data'),
     Input('SOC-map', 'clickData'))
 def update_columns(clickData):
+    """
+    Displays data of clicked point in DataFrame on Data-Table
+
+    Parameters:
+        clickData (dict): Dictionary containing all map-data of selected point.
+
+    Returns:
+        Data to be put into Data-Table.
+    """
     try:
         ID = clickData['points'][0]['hovertext']
         data = df2[df2['POINT_ID'] == ID].to_dict('records')
-    except:
+    except (Exception,):
         ID = None
         data = df2[df2['POINT_ID'] == ID].to_dict('records')
     return data
@@ -51,6 +79,15 @@ def update_columns(clickData):
 
 @cache.memoize(10)
 def filter_occurances(filter_text):
+    """
+    Selects data that falls within given OC-range
+
+    Parameters:
+        filter_text (list): list containing the minimum and maximum selected values from range-slider.
+
+    Returns:
+        DataFrame containing data withing the minimum and maximum value.
+    """
     return df2[(df2['OC'] >= filter_text[0]) & (df2['OC'] <= filter_text[1])]
 
 

@@ -25,6 +25,15 @@ cache = Cache(app.server, config={"CACHE_TYPE": "simple"})
 
 
 def SOC_map(occurances):
+    """
+    Creates a scatter_mapbox with the given values and returns it.
+
+    Parameters:
+        occurances (pd.DataFrame): DataFrame containing data that needs to be displayed.
+
+    Returns:
+        Scatter_mapbox of given data.
+    """
     token = open("token.txt").read()
     fig2 = px.scatter_mapbox(occurances, lat="GPS_LAT", lon="GPS_LONG",
                              color_discrete_sequence=["green"], zoom=2, height=600, size_max=10,
@@ -48,6 +57,15 @@ def SOC_map(occurances):
 
     [Input('range-slider', 'value')])
 def update_output(value):
+    """
+    Updates the scatter_mapbox and the text on the range page based on the range-slider
+
+    Parameters:
+        value (list): list containing the minimum and maximum selected values from range-slider.
+
+    Returns:
+        Text line with info about the data and a scatter_mapbox with values within the given range.
+    """
     filterset = filter_occurances(value)
     return 'There are {} points in the range {} to {}'.format(len(filterset), value[0], value[1]), SOC_map(filterset)
 
@@ -57,19 +75,28 @@ def update_output(value):
      Output('predict-table', 'data')],
     Input('SOC-map', 'clickData'))
 def update_columns(clickData):
+    """
+    Displays data of clicked point in DataFrame on Data-Table
+
+    Parameters:
+        clickData (dict): Dictionary containing all map-data of selected point.
+
+    Returns:
+        Data to be put into Data-Table's.
+    """
     try:
         ID = clickData['points'][0]['hovertext']
-    except:
+    except (Exception,):
         ID = None
 
     data = df2[df2['Point_ID'] == ID].to_dict('records')
 
     try:
-        specs = spec[spec['Point_ID'] == ID]
+        specs = spec[spec['Point_ID'] == ID].copy()
         ocs = knn.predict(specs[specs.columns[2:]].values)
         specs['OC'] = ocs
         pred = specs.to_dict('records')
-    except:
+    except (Exception,):
         pred = spec[spec['Point_ID'] == ID].to_dict('records')
 
     return data, pred
@@ -84,27 +111,39 @@ def update_columns(clickData):
            State(component_id='lat-input', component_property='value')]
 )
 def update_output_div(n_clicks, lon, lat):
+    """
+    Updates the scatter_mapbox and both Data-Table's on the closest page based on the input fields
+
+    Parameters:
+        n_clicks (int): Integer of how many times the input button has been pressed.
+        lon (float): Given Longitude value.
+        lat (float): Given Latitude value.
+
+    Returns:
+        Data of the 5 closest Points_ID's to given coordinates, predicted values for these points,
+        and a Scatter-mapbox visualising these points.
+    """
     try:
         items = pd.DataFrame({'distance': (abs(df2['GPS_LONG'] - lon) + abs(df2['GPS_LAT'] - lat)),
                               'Point_ID': df2['Point_ID']})
         items.sort_values(by='distance', inplace=True)
         IDs = items['Point_ID'].unique()[:5]
-    except:
+    except (Exception,):
         IDs = None
 
     try:
         datafull = df2[df2['Point_ID'].isin(IDs)]
         data = datafull.to_dict('records')
-    except:
+    except (Exception,):
         datafull = df2
         data = None
 
     try:
-        specs = spec[spec['Point_ID'].isin(IDs)]
+        specs = spec[spec['Point_ID'].isin(IDs)].copy()
         ocs = knn.predict(specs[specs.columns[2:]].values)
         specs['OC'] = ocs
         pred = specs.to_dict('records')
-    except:
+    except (Exception,):
         pred = None
 
     return data, pred, SOC_map(datafull)
@@ -112,6 +151,15 @@ def update_output_div(n_clicks, lon, lat):
 
 @cache.memoize(10)
 def filter_occurances(filter_text):
+    """
+    Selects data that falls within given OC-range
+
+    Parameters:
+        filter_text (list): list containing the minimum and maximum selected values from range-slider.
+
+    Returns:
+        DataFrame containing data withing the minimum and maximum value.
+    """
     return df2[(df2['OC'] >= filter_text[0]) & (df2['OC'] <= filter_text[1])]
 
 
@@ -165,7 +213,7 @@ app.layout = html.Div([
                 ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
                           'backgroundColor': '#6CC4A6', 'verticalAlign': 'top'})
             ], style={'backgroundColor': '#6CC4A6', 'border': '1px solid #348C6E'},
-                    selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'}),
+               selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'}),
             dcc.Tab(label='Closest', children=[
                 html.Div(html.H1("SOC in Europa", style={'textAlign': 'center'}),
                          style={'backgroundColor': '#E8E8E8', 'padding': '0.1px'}),
@@ -207,7 +255,7 @@ app.layout = html.Div([
                 ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
                           'backgroundColor': '#6CC4A6', 'verticalAlign': 'top'})
             ], style={'backgroundColor': '#6CC4A6', 'border': '1px solid #348C6E'},
-                    selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'})
+               selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'})
         ])
     ], style={'padding': '10px 10px 55px 10px', 'backgroundColor': 'lightgrey'}),
     html.Div([
