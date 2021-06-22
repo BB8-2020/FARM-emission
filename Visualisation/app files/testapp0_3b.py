@@ -82,12 +82,12 @@ def update_columns(clickData):
         Data to be put into Data-Table.
 
     """
-    try:
+    if clickData is not None:
         ID = clickData['points'][0]['hovertext']
-        data = df2[df2['Point_ID'] == ID].to_dict('records')
-    except (Exception,):
+    else:
         ID = None
-        data = df2[df2['Point_ID'] == ID].to_dict('records')
+
+    data = df2[df2['Point_ID'] == ID].to_dict('records')
     return data
 
 
@@ -113,14 +113,15 @@ def update_output_div(n_clicks, input_value1, input_value2):  # 65
         Data of the 5 closest points to given coordinates and a Scatter-mapbox visualising these points.
 
     """
-    try:
+    if input_value1 is not None and input_value2 is not None:
         items = (abs(df2['GPS_LONG'] - input_value1) + abs(df2['GPS_LAT'] - input_value2))
         items.sort_values(inplace=True)
         head = items.head()
         headmin = head.index
         datafull = df2.iloc[headmin, :]
         data = datafull.to_dict('records')
-    except (Exception,):
+    else:
+        print(input_value1)
         datafull = df2
         data = None
     return data, SOC_map(datafull)

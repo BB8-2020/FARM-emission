@@ -76,12 +76,12 @@ def update_columns(clickData):
         Data to be put into Data-Table.
 
     """
-    try:
+    if clickData is not None:
         ID = clickData['points'][0]['hovertext']
-        data = df2[df2['POINT_ID'] == ID].to_dict('records')
-    except (Exception,):
+    else:
         ID = None
-        data = df2[df2['POINT_ID'] == ID].to_dict('records')
+
+    data = df2[df2['POINT_ID'] == ID].to_dict('records')
     return data
 
 

@@ -93,20 +93,21 @@ def update_columns(clickData):
         Data to be put into Data-Table's.
 
     """
-    try:
+    if clickData is not None:
         ID = clickData['points'][0]['hovertext']
-    except (Exception,):
+    else:
         ID = None
 
     data = df2[df2['Point_ID'] == ID].to_dict('records')
 
-    try:
-        specs = spec[spec['Point_ID'] == ID].copy()
+    specs = spec[spec['Point_ID'] == ID].copy()
+
+    if len(specs.index) != 0:
         ocs = knn.predict(specs[specs.columns[2:]].values)
         specs['OC'] = ocs
         pred = specs.to_dict('records')
-    except (Exception,):
-        pred = spec[spec['Point_ID'] == ID].to_dict('records')
+    else:
+        pred = None
 
     return data, pred
 
@@ -135,27 +136,33 @@ def update_output_div(n_clicks, lon, lat):
         and a Scatter-mapbox visualising these points.
 
     """
-    try:
+    if lon is not None and lat is not None:
         items = pd.DataFrame({'distance': (abs(df2['GPS_LONG'] - lon) + abs(df2['GPS_LAT'] - lat)),
                               'Point_ID': df2['Point_ID']})
         items.sort_values(by='distance', inplace=True)
         IDs = items['Point_ID'].unique()[:5]
-    except (Exception,):
-        IDs = None
+    else:
+        IDs = []
 
-    try:
+    if IDs != []:
+        print(IDs)
         datafull = df2[df2['Point_ID'].isin(IDs)]
         data = datafull.to_dict('records')
-    except (Exception,):
+    else:
+        print(IDs)
         datafull = df2
         data = None
 
-    try:
-        specs = spec[spec['Point_ID'].isin(IDs)].copy()
+    specs = spec[spec['Point_ID'].isin(IDs)].copy()
+    print(specs)
+
+    if len(specs.index) != 0:
+        print(IDs)
         ocs = knn.predict(specs[specs.columns[2:]].values)
         specs['OC'] = ocs
         pred = specs.to_dict('records')
-    except (Exception,):
+    else:
+        print(IDs)
         pred = None
 
     return data, pred, SOC_map(datafull)
@@ -173,7 +180,7 @@ def filter_occurances(filter_text):
     Returns
     -------
         DataFrame containing data withing the minimum and maximum value.
-    
+
     """
     return df2[(df2['OC'] >= filter_text[0]) & (df2['OC'] <= filter_text[1])]
 
