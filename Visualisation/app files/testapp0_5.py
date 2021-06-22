@@ -26,13 +26,16 @@ cache = Cache(app.server, config={"CACHE_TYPE": "simple"})
 
 def SOC_map(occurances):
     """
-    Creates a scatter_mapbox with the given values and returns it.
+    Create a scatter_mapbox with the given values and return it.
 
-    Parameters:
+    Parameters
+    ----------
         occurances (pd.DataFrame): DataFrame containing data that needs to be displayed.
 
-    Returns:
+    Returns
+    -------
         Scatter_mapbox of given data.
+
     """
     token = open("token.txt").read()
     fig2 = px.scatter_mapbox(occurances, lat="GPS_LAT", lon="GPS_LONG",
@@ -58,13 +61,16 @@ def SOC_map(occurances):
     [Input('range-slider', 'value')])
 def update_output(value):
     """
-    Updates the scatter_mapbox and the text on the range page based on the range-slider
+    Update the scatter_mapbox and the text on the range page based on the range-slider
 
-    Parameters:
+    Parameters
+    ----------
         value (list): list containing the minimum and maximum selected values from range-slider.
 
-    Returns:
+    Returns
+    -------
         Text line with info about the data and a scatter_mapbox with values within the given range.
+
     """
     filterset = filter_occurances(value)
     return 'There are {} points in the range {} to {}'.format(len(filterset), value[0], value[1]), SOC_map(filterset)
@@ -76,13 +82,16 @@ def update_output(value):
     Input('SOC-map', 'clickData'))
 def update_columns(clickData):
     """
-    Displays data of clicked point in DataFrame on Data-Table
+    Display data of clicked point in DataFrame on Data-Table
 
-    Parameters:
+    Parameters
+    ----------
         clickData (dict): Dictionary containing all map-data of selected point.
 
-    Returns:
+    Returns
+    -------
         Data to be put into Data-Table's.
+
     """
     try:
         ID = clickData['points'][0]['hovertext']
@@ -112,16 +121,19 @@ def update_columns(clickData):
 )
 def update_output_div(n_clicks, lon, lat):
     """
-    Updates the scatter_mapbox and both Data-Table's on the closest page based on the input fields
+    Update the scatter_mapbox and both Data-Table's on the closest page based on the input fields
 
-    Parameters:
+    Parameters
+    ----------
         n_clicks (int): Integer of how many times the input button has been pressed.
         lon (float): Given Longitude value.
         lat (float): Given Latitude value.
 
-    Returns:
+    Returns
+    -------
         Data of the 5 closest Points_ID's to given coordinates, predicted values for these points,
         and a Scatter-mapbox visualising these points.
+
     """
     try:
         items = pd.DataFrame({'distance': (abs(df2['GPS_LONG'] - lon) + abs(df2['GPS_LAT'] - lat)),
@@ -152,13 +164,16 @@ def update_output_div(n_clicks, lon, lat):
 @cache.memoize(10)
 def filter_occurances(filter_text):
     """
-    Selects data that falls within given OC-range
+    Select data that falls within given OC-range
 
-    Parameters:
+    Parameters
+    ----------
         filter_text (list): list containing the minimum and maximum selected values from range-slider.
 
-    Returns:
+    Returns
+    -------
         DataFrame containing data withing the minimum and maximum value.
+    
     """
     return df2[(df2['OC'] >= filter_text[0]) & (df2['OC'] <= filter_text[1])]
 
@@ -170,7 +185,7 @@ app.layout = html.Div([
                 html.Div(html.H1("SOC in Europa", style={'textAlign': 'center'}),
                          style={'backgroundColor': 'green', 'padding': '0.1px'}),
                 html.Div(dcc.Graph(id="SOC-map", config={'displayModeBar': False}),
-                         style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
+                         style={'padding': '5px', 'width': '49.25%', 'display': 'inline-block',
                                 'backgroundColor': '#6CC4A6'}),
                 html.Div([
                     html.Div([
@@ -210,23 +225,23 @@ app.layout = html.Div([
                             } for i in df2.columns],
                             editable=False)
                     ], style={'min-height': '130px'})
-                ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
+                ], style={'padding': '5px', 'width': '49.25%', 'display': 'inline-block',
                           'backgroundColor': '#6CC4A6', 'verticalAlign': 'top'})
-            ], style={'backgroundColor': '#6CC4A6', 'border': '1px solid #348C6E'},
-               selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'}),
+            ], style={'backgroundColor': '#F0F0F0', 'border': '1px solid #C0C0C0'},
+               selected_style={'backgroundColor': '#C0C0C0', 'border': '1px solid #F0F0F0'}),
             dcc.Tab(label='Closest', children=[
-                html.Div(html.H1("SOC in Europa", style={'textAlign': 'center'}),
-                         style={'backgroundColor': '#E8E8E8', 'padding': '0.1px'}),
+                html.Div(html.H1("SOC in Europa", style={'textAlign': 'center', 'color': 'white'}),
+                         style={'backgroundColor': 'rgb(18,171,219)', 'padding': '0.1px'}),
                 html.Div(dcc.Graph(id="SOC-map2", config={'displayModeBar': False}),
-                         style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
-                                'backgroundColor': '#F0F0F0'}),
+                         style={'padding': '5px', 'width': '49.25%', 'display': 'inline-block',
+                                'backgroundColor': '#E0E0E0'}),
                 html.Div([
                     html.Div([
                         dcc.Input(
-                            id="lon-input", type="number", placeholder="Longetude",
+                            id="lon-input", type="number", placeholder="Longitude",
                             min=df2['GPS_LONG'].min(), max=df2['GPS_LONG'].max()),
                         dcc.Input(
-                            id="lat-input", type="number", placeholder="Lattetude",
+                            id="lat-input", type="number", placeholder="Latitude",
                             min=df2['GPS_LAT'].min(), max=df2['GPS_LAT'].max()),
                         html.Button('Get Data', id='input-button')
                     ]),
@@ -252,10 +267,10 @@ app.layout = html.Div([
                             } for i in df2.columns],
                             editable=False)
                     ], style={'min-height': '130px'})
-                ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
-                          'backgroundColor': '#6CC4A6', 'verticalAlign': 'top'})
-            ], style={'backgroundColor': '#6CC4A6', 'border': '1px solid #348C6E'},
-               selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'})
+                ], style={'padding': '5px', 'width': '49.25%', 'display': 'inline-block',
+                          'backgroundColor': '#E8E8E8', 'verticalAlign': 'top'})
+            ], style={'backgroundColor': '#F0F0F0', 'border': '1px solid #C0C0C0'},
+               selected_style={'backgroundColor': '#C0C0C0', 'border': '1px solid #F0F0F0'})
         ])
     ], style={'padding': '10px 10px 55px 10px', 'backgroundColor': 'lightgrey'}),
     html.Div([

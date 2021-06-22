@@ -17,12 +17,14 @@ cache = Cache(app.server, config={"CACHE_TYPE": "simple"})
 
 def SOC_map(occurances):
     """
-    Creates a scatter_mapbox with the given values and returns it.
+    Create a scatter_mapbox with the given values and return it.
 
-    Parameters:
+    Parameters
+    ----------
         occurances (pd.DataFrame): DataFrame containing data that needs to be displayed.
 
-    Returns:
+    Returns
+    -------
         Scatter_mapbox of given data.
     """
     token = open("token.txt").read()
@@ -43,13 +45,16 @@ def SOC_map(occurances):
     [Input('range-slider', 'value')])
 def update_output(value):
     """
-    Updates the scatter_mapbox and the text on the range page based on the range-slider
+    Update the scatter_mapbox and the text on the range page based on the range-slider
 
-    Parameters:
+    Parameters
+    ----------
         value (list): list containing the minimum and maximum selected values from range-slider.
 
-    Returns:
+    Returns
+    -------
         Text line with info about the data and a scatter_mapbox with values within the given range.
+
     """
     filterset = filter_occurances(value)
     return 'There are {} points in the range {} to {}'.format(len(filterset), value[0], value[1]), SOC_map(filterset)
@@ -60,13 +65,16 @@ def update_output(value):
     Input('SOC-map', 'clickData'))
 def update_columns(clickData):
     """
-    Displays data of clicked point in DataFrame on Data-Table
+    Display data of clicked point in DataFrame on Data-Table
 
-    Parameters:
+    Parameters
+    ----------
         clickData (dict): Dictionary containing all map-data of selected point.
 
-    Returns:
+    Returns
+    -------
         Data to be put into Data-Table.
+
     """
     try:
         ID = clickData['points'][0]['hovertext']
@@ -80,13 +88,16 @@ def update_columns(clickData):
 @cache.memoize(10)
 def filter_occurances(filter_text):
     """
-    Selects data that falls within given OC-range
+    Select data that falls within given OC-range
 
-    Parameters:
+    Parameters
+    ----------
         filter_text (list): list containing the minimum and maximum selected values from range-slider.
 
-    Returns:
+    Returns
+    -------
         DataFrame containing data withing the minimum and maximum value.
+
     """
     return df2[(df2['OC'] >= filter_text[0]) & (df2['OC'] <= filter_text[1])]
 
