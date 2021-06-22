@@ -19,14 +19,17 @@ app.layout = html.Div([
 )
 def update_output_div(n_clicks, input_value):
     """
-    Updates the text line with the input given and the amount of clicks.
+    Update the text line with the input given and the amount of clicks.
 
-    Parameters:
+    Parameters
+    ----------
         n_clicks (int): The amount of clicks.
         input_value (str): The given input.
 
-    Returns:
+    Returns
+    -------
         String containing input_value and n_clicks.
+
     """
     return 'You\'ve entered "{}" and clicked {} times'.format(input_value, n_clicks)
 
