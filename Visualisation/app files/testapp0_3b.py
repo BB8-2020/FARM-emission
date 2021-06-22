@@ -51,7 +51,7 @@ def SOC_map(occurances):
     [Input('range-slider', 'value')])
 def update_output(value):
     """
-    Update the scatter_mapbox and the text on the range page based on the range-slider
+    Update the scatter_mapbox and the text on the range page based on the range-slider.
 
     Parameters
     ----------
@@ -71,7 +71,7 @@ def update_output(value):
     Input('SOC-map', 'clickData'))
 def update_columns(clickData):
     """
-    Display data of clicked point in DataFrame on Data-Table
+    Display data of clicked point in DataFrame on Data-Table.
 
     Parameters
     ----------
@@ -100,7 +100,7 @@ def update_columns(clickData):
 )
 def update_output_div(n_clicks, input_value1, input_value2):  # 65
     """
-    Update the scatter_mapbox and the Data-Table on the closest page based on the input fields
+    Update the scatter_mapbox and the Data-Table on the closest page based on the input fields.
 
     Parameters
     ----------
@@ -129,7 +129,7 @@ def update_output_div(n_clicks, input_value1, input_value2):  # 65
 @cache.memoize(10)
 def filter_occurances(filter_text):
     """
-    Select data that falls within given OC-range
+    Select data that falls within given OC-range.
 
     Parameters
     ----------
@@ -176,7 +176,7 @@ app.layout = html.Div([
             ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
                       'backgroundColor': '#6CC4A6', 'vertical-align': 'top'})
         ], style={'backgroundColor': '#6CC4A6', 'border': '1px solid #348C6E'},
-           selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'}),
+            selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'}),
         dcc.Tab(label='Closest', children=[
             html.Div(html.H1("SOC in Europa", style={'text-align': 'center'}), style={'backgroundColor': 'green'}),
             html.Div(dcc.Graph(id="SOC-map2", config={'displayModeBar': False}),
@@ -203,7 +203,7 @@ app.layout = html.Div([
             ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
                       'backgroundColor': '#6CC4A6', 'vertical-align': 'top'})
         ], style={'backgroundColor': '#6CC4A6', 'border': '1px solid #348C6E'},
-           selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'})
+            selected_style={'backgroundColor': '#348C6E', 'border': '1px solid #6CC4A6'})
     ])
 ], style={'padding': '10px', 'backgroundColor': '#4EA688'})
 

@@ -45,7 +45,7 @@ def SOC_map(occurances):
     [Input('range-slider', 'value')])
 def update_output(value):
     """
-    Update the scatter_mapbox and the text on the range page based on the range-slider
+    Update the scatter_mapbox and the text on the range page based on the range-slider.
 
     Parameters
     ----------
@@ -65,7 +65,7 @@ def update_output(value):
     Input('SOC-map', 'clickData'))
 def update_columns(clickData):
     """
-    Display data of clicked point in DataFrame on Data-Table
+    Display data of clicked point in DataFrame on Data-Table.
 
     Parameters
     ----------
@@ -88,7 +88,7 @@ def update_columns(clickData):
 @cache.memoize(10)
 def filter_occurances(filter_text):
     """
-    Select data that falls within given OC-range
+    Select data that falls within given OC-range.
 
     Parameters
     ----------
