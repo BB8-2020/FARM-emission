@@ -9,17 +9,13 @@ from sklearn import tree
 def obtain_data():
     """
     This part reads all csv files of the LUCAS 2015 dataset. It reads the reflectance
-    values and OC values of all given location points and puts it in a pandas dataframe
-
-    Parameters
-    ----------
+    values and OC values of all given location points and puts it in a pandas dataframe.
 
     Returns
     -------
          A pandas dataframe with all the raw data
 
     """
-
     # Every land code, each code is a csv file.
     LC = ["AT", "BE", "NL", "DE", "UK", "EL", "EE", "DK", "CZ", "CY", "BG", "FI", "FR",
           "HR", "HU", "IE", "IT", "LT", "LU", "LV", "MT", "PL", "PT", "RO", "SE", "SI", "SK"]
@@ -54,7 +50,6 @@ def remove_outliers(result):
          A pandas dataframe with its outliers removed.
 
     """
-
     Q1 = result['OC'].quantile(0.25)
     Q3 = result['OC'].quantile(0.75)
     IQR = Q3 - Q1
@@ -82,7 +77,6 @@ def split_data(result, test_size=0.20, random_state=3):
          target train and test set.
 
     """
-
     X = result[result.columns[2:-1]].values
     y = result[result.columns[-1]].values
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
@@ -100,9 +94,6 @@ def linear_regression_model(X_train, X_test, y_train, y_test):
         X_test (numpy list): The features the model gets tested on
         y_train (numpy list): The targets the model gets trained on
         y_test (numpy list): The targets the model gets tested on
-
-    Returns
-    -------
 
     """
     model = LinearRegression()
@@ -123,9 +114,6 @@ def decision_tree_model(X_train, X_test, y_train, y_test):
         X_test (numpy list): The features the model gets tested on
         y_train (numpy list): The targets the model gets trained on
         y_test (numpy list): The targets the model gets tested on
-
-    Returns
-    -------
 
     """
     DT = tree.DecisionTreeRegressor()
