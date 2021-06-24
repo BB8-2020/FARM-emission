@@ -50,7 +50,7 @@ def make_base_dataframe():
     df = pd.read_csv(co_data_path, usecols=col_list)
     max_value = df["OC"].max()
     for i in range(20, int(max_value) + 1, 20):
-        df.loc[(df['OC'] < i) & (df['OC'] > (i-20)), ['OC_state']] = f'{i-20}-{i}'
+        df.loc[(df['OC'] < i) & (df['OC'] > (i - 20)), ['OC_state']] = f'{i-20}-{i}'
     return df
 
 
