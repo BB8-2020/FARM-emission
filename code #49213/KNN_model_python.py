@@ -136,7 +136,7 @@ def KNN_model(X_train, X_test, y_train, y_test):
     """
     The K-nearest neighbour model, build and fitted. Here the
     results also get printed.
-    
+
     Parameters
     ----------
         X_train (numpy list): The features the model gets trained on
