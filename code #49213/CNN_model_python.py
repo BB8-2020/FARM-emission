@@ -1,5 +1,5 @@
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization, Conv2D, MaxPooling2D
+from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization, Conv2D
 from tensorflow.keras.regularizers import l2
 import numpy as np
 import h5py
@@ -20,7 +20,6 @@ def get_data():
     """
     print('loading data...')
     folder = r"D:\FARM_data\Soil_Spectra_Label"
-    f = h5py.File(folder + r'\labeled_data.hdf5', 'r')
     reread = pd.read_hdf(folder + r"\labeled_data.hdf5", key='FR')
     countries = ['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'EL', 'ES', 'HR', 'HU', 'IE',
                  'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'UK']
@@ -48,8 +47,8 @@ def add_landscapes(reread):
 
     """
     print("Adding landscape column...")
-    folder1 = "D:\FARM_data\LUCAS2015_topsoildata_20200323"
-    tempdf = pd.read_csv(folder1 + "\LUCAS_Topsoil_2015_20200323.csv", usecols=["Point_ID", "LC1_Desc"])
+    folder1 = r"D:\FARM_data\LUCAS2015_topsoildata_20200323"
+    tempdf = pd.read_csv(folder1 + r"\LUCAS_Topsoil_2015_20200323.csv", usecols=["Point_ID", "LC1_Desc"])
     reread = pd.merge(reread, tempdf, on='Point_ID', how='left')
 
     print("done")
@@ -146,7 +145,7 @@ def setup_model(label_train_length):
     model = Sequential()
     model.add(Conv2D(32, (7, 7), strides=(2, 2), padding="valid",
               kernel_initializer=init, kernel_regularizer=reg,
-              input_shape=(217,335,3)))
+              input_shape=(217, 335, 3)))
 
     # here we stack two CONV layers on top of each other where
     # each layerswill learn a total of 32 (3x3) filters
