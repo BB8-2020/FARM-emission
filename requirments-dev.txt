@@ -7,3 +7,4 @@ flake8-rst-docstrings
 flake8-logging-format
 pytest
 mypy
+dash
