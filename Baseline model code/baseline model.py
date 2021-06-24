@@ -8,12 +8,12 @@ from sklearn import tree
 
 def obtain_data():
     """
-    This part reads all csv files of the LUCAS 2015 dataset. It reads the reflectance
-    values and OC values of all given location points and puts it in a pandas dataframe.
+    Reads all csv files of the LUCAS 2015 dataset. Reads the reflectance
+    values and OC values of all given location points and gets put in a pandas dataframe.
 
     Returns
     -------
-         A pandas dataframe with all the raw data
+         A pandas dataframe with all the raw data.
 
     """
     # Every land code, each code is a csv file.
@@ -39,7 +39,7 @@ def obtain_data():
 
 def remove_outliers(result):
     """
-    Remove all strong outliers of the OC values in the dataset
+    Remove all strong outliers of the OC values in the dataset.
 
     Parameters
     ----------
