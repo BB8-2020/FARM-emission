@@ -58,7 +58,7 @@ def add_spectogram_images(df, folder, countries):
     """
     Makes all the spectograms with the whole dataset and is added to
     a dataframe. This whole dataframe is saved in a hdf5 file.
-    
+
     Parameters
     ----------
         df (pandas dataframe): base dataframe to add the spectograms to.
