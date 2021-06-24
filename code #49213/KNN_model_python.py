@@ -37,6 +37,7 @@ def filter_data(result):
     Filters every 20th reflectance value, it has been shown to increase the accuracy of
     our model and also speeds up the fitting process.
 
+    Parameters
     ----------
         result (pandas dataframe): complete raw dataset.
 
@@ -54,8 +55,8 @@ def filter_data(result):
 def remove_outliers(result):
     """
     Remove all strong outliers of the OC values in the dataset.
-    Parameters
 
+    Parameters
     ----------
         result (pandas dataframe): complete dataset.
 
