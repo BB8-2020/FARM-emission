@@ -2,7 +2,6 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization, Conv2D
 from tensorflow.keras.regularizers import l2
 import numpy as np
-import h5py
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer
