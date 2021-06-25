@@ -110,17 +110,43 @@ def update_columns(clickData, model):
     data = df2[df2['Point_ID'] == ID].to_dict('records')
 
     if model == 'KNN':
-        specs = spec[spec['Point_ID'] == ID].copy()
+        pred = range_predict(model, knn, ID, spec)
+    elif model == 'CNN':
+        pred = range_predict(model, cnn, ID, cnnspec)
+    else:
+        pred = None
+
+    return data, pred
+
+
+def range_predict(model_name, model, ID, data):
+    """
+    Predict for given data with given model.
+
+    Parameters
+    ----------
+        model_name (str): String defining which model is to be used.
+        model (obj): Model that is used to predict.
+        ID (str, int): ID of points to predict.
+        data(pd.DataFrame): Spectral data for model.
+
+    Returns
+    -------
+        Prediction from model.
+
+    """
+    if model_name == 'KNN':
+        specs = data[data['Point_ID'] == ID].copy()
         if len(specs.index) != 0:
-            ocs = knn.predict(specs[specs.columns[2:]].values)
+            ocs = model.predict(specs[specs.columns[2:]].values)
             specs['OC'] = ocs
             pred = specs.to_dict('records')
         else:
             pred = None
-    elif model == 'CNN':
-        specs = cnnspec[cnnspec['Point_ID'] == ID].copy()
+    elif model_name == 'CNN':
+        specs = data[data['Point_ID'] == ID].copy()
         if len(specs.index) != 0:
-            ocs = cnn.predict(np.array(list(specs['spectogram'].values)))
+            ocs = model.predict(np.array(list(specs['spectogram'].values)))
             specs['OC'] = ocs
             pred = specs.to_dict('records')
         else:
@@ -128,7 +154,7 @@ def update_columns(clickData, model):
     else:
         pred = None
 
-    return data, pred
+    return pred
 
 
 @app.callback(
@@ -172,18 +198,43 @@ def update_output_div(n_clicks, model, lon, lat):
         data = None
 
     if model == 'KNN':
-        specs = spec[spec['Point_ID'].isin(IDs)].copy()
-        if len(specs.index) != 0:
+        pred = closest_predict(model, knn, IDs, spec)
+    elif model == 'CNN':
+        pred = closest_predict(model, cnn, IDs, cnnspec)
+    else:
+        pred = None
 
-            ocs = knn.predict(specs[specs.columns[2:]].values)
+    return data, pred, SOC_map(datafull)
+
+
+def closest_predict(model_name, model, IDs, data):
+    """
+    Predict for given data with given model.
+
+    Parameters
+    ----------
+        model_name (str): String defining which model is to be used.
+        model (obj): Model that is used to predict.
+        IDs (list): IDs of points to predict.
+        data(pd.DataFrame): Spectral data for model.
+
+    Returns
+    -------
+        Prediction from model.
+
+    """
+    if model_name == 'KNN':
+        specs = data[data['Point_ID'].isin(IDs)].copy()
+        if len(specs.index) != 0:
+            ocs = model.predict(specs[specs.columns[2:]].values)
             specs['OC'] = ocs
             pred = specs.to_dict('records')
         else:
             pred = None
-    elif model == 'CNN':
-        specs = cnnspec[cnnspec['Point_ID'].isin(IDs)].copy()
+    elif model_name == 'CNN':
+        specs = data[data['Point_ID'].isin(IDs)].copy()
         if len(specs.index) != 0:
-            ocs = cnn.predict(np.array(list(specs['spectogram'].values)))
+            ocs = model.predict(np.array(list(specs['spectogram'].values)))
             specs['OC'] = ocs
             pred = specs.to_dict('records')
         else:
@@ -191,7 +242,7 @@ def update_output_div(n_clicks, model, lon, lat):
     else:
         pred = None
 
-    return data, pred, SOC_map(datafull)
+    return pred
 
 
 @cache.memoize(10)

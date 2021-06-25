@@ -27,10 +27,11 @@ print('Pickled spec')
 
 f = h5py.File('data/labeled_data.hdf5', 'r')
 reread = pd.read_hdf("data/labeled_data.hdf5", key='FR')
-countries = ['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'EL', 'ES', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'UK']
+countries = ['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'EL', 'ES', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT',
+             'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK', 'UK']
 for country in countries:
     temppd = pd.read_hdf("data/labeled_data.hdf5", key=country)
-    reread = pd.concat((reread, temppd), ignore_index = True)
+    reread = pd.concat((reread, temppd), ignore_index=True)
 reread = pd.DataFrame(reread.drop(columns=['OC', 'NUTS_0']))
 reread.insert(1, 'Year', 2015)
 reread.to_pickle('data/cnnspec0_4.pkl')
