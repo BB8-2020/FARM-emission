@@ -6,7 +6,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 
-df2 = pd.read_pickle('Lucas0_1.pkl')
+df2 = pd.read_pickle('data/Lucas0_1.pkl')
 
 token = open("token.txt").read()
 fig2 = px.scatter_mapbox(df2, lat="GPS_LAT", lon="GPS_LONG",

@@ -8,7 +8,7 @@ from flask_caching import Cache
 import pandas as pd
 import plotly.express as px
 
-df2 = pd.read_pickle('Lucas0_1a.pkl')
+df2 = pd.read_pickle('data/kenya0_2a.pkl')
 
 app = dash.Dash()
 
@@ -30,10 +30,10 @@ def SOC_map(occurances):
     """
     token = open("token.txt").read()
     fig2 = px.scatter_mapbox(occurances, lat="GPS_LAT", lon="GPS_LONG",
-                             color_discrete_sequence=["green"], zoom=2, height=500, size_max=10,
+                             color_discrete_sequence=["green"], zoom=5, height=600, size_max=10,
                              color_continuous_scale=px.colors.diverging.RdYlGn, color='OC',
                              range_color=[df2['OC'].min(), df2['OC'].max()], opacity=0.75, hover_name="Point_ID")
-    fig2.update_layout(mapbox_style="dark", mapbox_accesstoken=token)
+    fig2.update_layout(mapbox_style="satellite-streets", mapbox_accesstoken=token)
     fig2.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     fig2.update_layout({
         'plot_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -83,7 +83,10 @@ def update_columns(clickData):
 
     """
     if clickData is not None:
-        ID = clickData['points'][0]['hovertext']
+        try:
+            ID = int(clickData['points'][0]['hovertext'])
+        except ValueError:
+            ID = clickData['points'][0]['hovertext']
     else:
         ID = None
 
@@ -98,7 +101,7 @@ def update_columns(clickData):
     state=[State(component_id='my-id', component_property='value'),
            State(component_id='my-id2', component_property='value')]
 )
-def update_output_div(n_clicks, input_value1, input_value2):  # 65
+def update_output_div(n_clicks, input_value1, input_value2):
     """
     Update the scatter_mapbox and the Data-Table on the closest page based on the input fields.
 
@@ -118,10 +121,9 @@ def update_output_div(n_clicks, input_value1, input_value2):  # 65
         items.sort_values(inplace=True)
         head = items.head()
         headmin = head.index
-        datafull = df2.iloc[headmin, :]
+        datafull = df2.loc[headmin, :]
         data = datafull.to_dict('records')
     else:
-        print(input_value1)
         datafull = df2
         data = None
     return data, SOC_map(datafull)

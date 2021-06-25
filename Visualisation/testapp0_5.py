@@ -9,8 +9,8 @@ import pandas as pd
 import plotly.express as px
 from joblib import load
 
-df2 = pd.read_pickle('Lucas0_3.pkl')
-spec = pd.read_pickle('spec0_3.pkl')
+df2 = pd.read_pickle('data/Lucas0_3.pkl')
+spec = pd.read_pickle('data/spec0_3.pkl')
 knn = load('knn-lucas.joblib')
 
 farm_logo = 'logo.56e22df1.png'
@@ -82,7 +82,7 @@ def update_output(value):
     Input('SOC-map', 'clickData'))
 def update_columns(clickData):
     """
-    Display data of clicked point in DataFrame on Data-Table.
+    Display data of clicked point in DataFrame and predicted data on Data-Tables.
 
     Parameters
     ----------
@@ -94,10 +94,12 @@ def update_columns(clickData):
 
     """
     if clickData is not None:
-        ID = clickData['points'][0]['hovertext']
+        try:
+            ID = int(clickData['points'][0]['hovertext'])
+        except ValueError:
+            ID = clickData['points'][0]['hovertext']
     else:
         ID = None
-
     data = df2[df2['Point_ID'] == ID].to_dict('records')
 
     specs = spec[spec['Point_ID'] == ID].copy()
@@ -144,25 +146,20 @@ def update_output_div(n_clicks, lon, lat):
     else:
         IDs = []
 
-    if IDs != []:
-        print(IDs)
+    if len(IDs) != 0:
         datafull = df2[df2['Point_ID'].isin(IDs)]
         data = datafull.to_dict('records')
     else:
-        print(IDs)
         datafull = df2
         data = None
 
     specs = spec[spec['Point_ID'].isin(IDs)].copy()
-    print(specs)
 
     if len(specs.index) != 0:
-        print(IDs)
         ocs = knn.predict(specs[specs.columns[2:]].values)
         specs['OC'] = ocs
         pred = specs.to_dict('records')
     else:
-        print(IDs)
         pred = None
 
     return data, pred, SOC_map(datafull)
@@ -189,95 +186,100 @@ app.layout = html.Div([
     html.Div([
         dcc.Tabs([
             dcc.Tab(label='In Range', children=[
-                html.Div(html.H1("SOC in Europa", style={'textAlign': 'center'}),
-                         style={'backgroundColor': 'green', 'padding': '0.1px'}),
-                html.Div(dcc.Graph(id="SOC-map", config={'displayModeBar': False}),
-                         style={'padding': '5px', 'width': '49.25%', 'display': 'inline-block',
-                                'backgroundColor': '#6CC4A6'}),
                 html.Div([
+                    html.Div(html.H1("SOC in Europa", style={'textAlign': 'center', 'color': 'white'}),
+                             style={'backgroundColor': 'rgb(18,171,219)', 'padding': '0.1px'}),
+                    html.Div(dcc.Graph(id="SOC-map", config={'displayModeBar': False}),
+                             style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
+                                    'backgroundColor': '#E8E8E8'}),
                     html.Div([
-                        html.Div(id='output-range-slider',
-                                 style={'padding': '5px', 'display': 'inline-block', 'height': '18px'}),
-                        html.Div(
-                            dcc.RangeSlider(
-                                id='range-slider',
-                                min=df2["OC"].min(),
-                                max=df2["OC"].max(),
-                                step=0.5,
-                                value=[df2["OC"].min(), df2["OC"].max()],
-                                allowCross=False,
-                                pushable=0.5,
-                                tooltip={
-                                    'always_visible': True,
-                                    'placement': 'bottom'
-                                }))
-                    ], style={'height': '70px'}),
-                    html.Div([
-                        dcc.Markdown("""**Known Data**"""),
-                        dash_table.DataTable(
-                            id='known-table',
-                            columns=[{
-                                'name': i,
-                                'id': i
-                            } for i in df2.columns],
-                            editable=False)
-                    ], style={'min-height': '130px'}),
-                    html.Div([
-                        dcc.Markdown("""**Predicted Data**"""),
-                        dash_table.DataTable(
-                            id='predict-table',
-                            columns=[{
-                                'name': i,
-                                'id': i
-                            } for i in df2.columns],
-                            editable=False)
-                    ], style={'min-height': '130px'})
-                ], style={'padding': '5px', 'width': '49.25%', 'display': 'inline-block',
-                          'backgroundColor': '#6CC4A6', 'verticalAlign': 'top'})
+                        html.Div([
+                            html.Div(id='output-range-slider',
+                                     style={'padding': '5px', 'display': 'inline-block', 'height': '18px'}),
+                            html.Div(
+                                dcc.RangeSlider(
+                                    id='range-slider',
+                                    min=df2["OC"].min(),
+                                    max=df2["OC"].max(),
+                                    step=0.5,
+                                    value=[df2["OC"].min(), df2["OC"].max()],
+                                    allowCross=False,
+                                    pushable=0.5,
+                                    tooltip={
+                                        'always_visible': True,
+                                        'placement': 'bottom'
+                                    }))
+                        ], style={'height': '70px'}),
+                        html.Div([
+                            dcc.Markdown("""**Known Data**"""),
+                            dash_table.DataTable(
+                                id='known-table',
+                                columns=[{
+                                    'name': i,
+                                    'id': i
+                                } for i in df2.columns],
+                                editable=False)
+                        ], style={'min-height': '130px'}),
+                        html.Div([
+                            dcc.Markdown("""**Predicted Data**"""),
+                            dash_table.DataTable(
+                                id='predict-table',
+                                columns=[{
+                                    'name': i,
+                                    'id': i
+                                } for i in df2.columns],
+                                editable=False)
+                        ], style={'min-height': '130px'})
+                    ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
+                              'backgroundColor': '#E0E0E0', 'verticalAlign': 'top', 'textAlign': 'left'})
+                ], style={'textAlign': 'center'})
             ], style={'backgroundColor': '#F0F0F0', 'border': '1px solid #C0C0C0'},
                 selected_style={'backgroundColor': '#C0C0C0', 'border': '1px solid #F0F0F0'}),
             dcc.Tab(label='Closest', children=[
-                html.Div(html.H1("SOC in Europa", style={'textAlign': 'center', 'color': 'white'}),
-                         style={'backgroundColor': 'rgb(18,171,219)', 'padding': '0.1px'}),
-                html.Div(dcc.Graph(id="SOC-map2", config={'displayModeBar': False}),
-                         style={'padding': '5px', 'width': '49.25%', 'display': 'inline-block',
-                                'backgroundColor': '#E0E0E0'}),
                 html.Div([
+                    html.Div(html.H1("SOC in Europa", style={'textAlign': 'center', 'color': 'white'}),
+                             style={'backgroundColor': 'rgb(18,171,219)', 'padding': '0.1px'}),
+                    html.Div(dcc.Graph(id="SOC-map2", config={'displayModeBar': False}),
+                             style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
+                                    'backgroundColor': '#E8E8E8', 'verticalAlign': 'top'}),
                     html.Div([
-                        dcc.Input(
-                            id="lon-input", type="number", placeholder="Longitude",
-                            min=df2['GPS_LONG'].min(), max=df2['GPS_LONG'].max()),
-                        dcc.Input(
-                            id="lat-input", type="number", placeholder="Latitude",
-                            min=df2['GPS_LAT'].min(), max=df2['GPS_LAT'].max()),
-                        html.Button('Get Data', id='input-button')
-                    ]),
-                    html.Div([
-                        dcc.Markdown("""**Known Data**"""),
-                        html.Pre(id='click-data2'),
-                        dash_table.DataTable(
-                            id='known-table2',
-                            columns=[{
-                                'name': i,
-                                'id': i
-                            } for i in df2.columns],
-                            editable=False)
-                    ], style={'min-height': '130px'}),
-                    html.Div([
-                        dcc.Markdown("""**Predicted Data**"""),
-                        html.Pre(id='predict-data2'),
-                        dash_table.DataTable(
-                            id='predict-table2',
-                            columns=[{
-                                'name': i,
-                                'id': i
-                            } for i in df2.columns],
-                            editable=False)
-                    ], style={'min-height': '130px'})
-                ], style={'padding': '5px', 'width': '49.25%', 'display': 'inline-block',
-                          'backgroundColor': '#E8E8E8', 'verticalAlign': 'top'})
+                        html.Div([
+                            dcc.Input(
+                                id="lon-input", type="number", placeholder="Longitude",
+                                min=df2['GPS_LONG'].min(), max=df2['GPS_LONG'].max()),
+                            dcc.Input(
+                                id="lat-input", type="number", placeholder="Latitude",
+                                min=df2['GPS_LAT'].min(), max=df2['GPS_LAT'].max()),
+                            html.Button('Get Data', id='input-button')
+                        ]),
+                        html.Div([
+                            dcc.Markdown("""**Known Data**"""),
+                            html.Pre(id='click-data2'),
+                            dash_table.DataTable(
+                                id='known-table2',
+                                columns=[{
+                                    'name': i,
+                                    'id': i
+                                } for i in df2.columns],
+                                editable=False)
+                        ], style={'min-height': '130px'}),
+                        html.Div([
+                            dcc.Markdown("""**Predicted Data**"""),
+                            html.Pre(id='predict-data2'),
+                            dash_table.DataTable(
+                                id='predict-table2',
+                                columns=[{
+                                    'name': i,
+                                    'id': i
+                                } for i in df2.columns],
+                                editable=False)
+                        ], style={'min-height': '130px'})
+                    ], style={'padding': '5px', 'width': '49%', 'display': 'inline-block',
+                              'backgroundColor': '#E0E0E0', 'verticalAlign': 'top', 'textAlign': 'left'})
+                ], style={'textAlign': 'center'})
             ], style={'backgroundColor': '#F0F0F0', 'border': '1px solid #C0C0C0'},
                 selected_style={'backgroundColor': '#C0C0C0', 'border': '1px solid #F0F0F0'})
+
         ])
     ], style={'padding': '10px 10px 55px 10px', 'backgroundColor': 'lightgrey'}),
     html.Div([
@@ -286,6 +288,6 @@ app.layout = html.Div([
         html.Img(src='data:image/png;base64,{}'.format(cap_logo.decode()),
                  style={'padding': '10px', 'width': '135px', 'display': 'inline-block', 'float': 'right'})
     ], style={'height': '50px', 'width': '100vw', 'position': 'fixed', 'bottom': '0', 'backgroundColor': 'white'})
-], style={'height': '100vh', 'width': '100vw'})
+], style={'height': '100vh', 'width': '100vw', 'font-family': 'Calibri'})
 
 app.run_server(debug=True)

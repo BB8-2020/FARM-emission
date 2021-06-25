@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_pickle('Lucas0_1.pkl')
+df = pd.read_pickle('data/Lucas0_1.pkl')
 print(df)
 lon = 6.514
 lat = 52.748
