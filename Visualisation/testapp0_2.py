@@ -8,7 +8,7 @@ from flask_caching import Cache
 import pandas as pd
 import plotly.express as px
 
-df2 = pd.read_pickle('Lucas0_1.pkl')
+df2 = pd.read_pickle('data/Lucas0_1.pkl')
 
 app = dash.Dash()
 
@@ -77,7 +77,10 @@ def update_columns(clickData):
 
     """
     if clickData is not None:
-        ID = clickData['points'][0]['hovertext']
+        try:
+            ID = int(clickData['points'][0]['hovertext'])
+        except ValueError:
+            ID = clickData['points'][0]['hovertext']
     else:
         ID = None
 

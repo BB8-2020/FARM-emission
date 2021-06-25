@@ -8,7 +8,7 @@ from flask_caching import Cache
 import pandas as pd
 import plotly.express as px
 
-df2 = pd.read_pickle('Lucas0_2.pkl')
+df2 = pd.read_pickle('data/Lucas0_1.pkl')
 
 app = dash.Dash()
 
@@ -30,10 +30,9 @@ def SOC_map(occurances):
     """
     token = open("token.txt").read()
     fig2 = px.scatter_mapbox(occurances, lat="GPS_LAT", lon="GPS_LONG",
-                             color_discrete_sequence=["green"], zoom=2, height=600, size_max=10,
+                             color_discrete_sequence=["green"], zoom=2, height=500, size_max=10,
                              color_continuous_scale=px.colors.diverging.RdYlGn, color='OC',
-                             range_color=[df2['OC'].min(), df2['OC'].max()], opacity=0.75, hover_name="Point_ID",
-                             animation_frame='Year')
+                             range_color=[df2['OC'].min(), df2['OC'].max()], opacity=0.75, hover_name="POINT_ID")
     fig2.update_layout(mapbox_style="dark", mapbox_accesstoken=token)
     fig2.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     fig2.update_layout({
@@ -84,11 +83,14 @@ def update_columns(clickData):
 
     """
     if clickData is not None:
-        ID = clickData['points'][0]['hovertext']
+        try:
+            ID = int(clickData['points'][0]['hovertext'])
+        except ValueError:
+            ID = clickData['points'][0]['hovertext']
     else:
         ID = None
 
-    data = df2[df2['Point_ID'] == ID].to_dict('records')
+    data = df2[df2['POINT_ID'] == ID].to_dict('records')
     return data
 
 
@@ -119,7 +121,7 @@ def update_output_div(n_clicks, input_value1, input_value2):
         items.sort_values(inplace=True)
         head = items.head()
         headmin = head.index
-        datafull = df2.loc[headmin, :]
+        datafull = df2.iloc[headmin, :]
         data = datafull.to_dict('records')
     else:
         datafull = df2
