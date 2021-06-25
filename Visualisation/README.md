@@ -17,7 +17,7 @@ python <filename.py>
 ## Usage example
 To use it:
 - Download the entire code as ZIP or clone it
-- Download data and model from https://www.dropbox.com/sh/uw96s25ayrid56u/AAATGV6mbZXQqQcmIZ_04S52a?dl=0
+- Download data and model from https://drive.google.com/drive/folders/1rfIvJxAsuf86tyVCqTHRwYKq9DS1LnIM?usp=sharing
 - Run the pickler file for the test- or app-file you want to run (If the pickles are not available)
 - Run the test- or app-file you want to run
   
